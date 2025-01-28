@@ -17,6 +17,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      transition: background 0.5s ease;
     }
 
     /* Splash Screen */
@@ -71,11 +72,29 @@
       margin-bottom: 20px;
     }
 
-    .answer {
-      margin: 10px 0;
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 200px;
+    }
+
+    .choice-button:hover {
+      background: #555;
     }
 
     button {
+      margin-top: 20px;
       padding: 10px 20px;
       font-size: 1rem;
       background: #333;
@@ -113,26 +132,34 @@
   <!-- Game Content -->
   <div class="game-content">
     <div id="question" class="question"></div>
-    <div id="options" class="options"></div>
+    <div id="choices" class="choices"></div>
     <button id="next-button" style="display: none;">Next</button>
   </div>
 
   <script>
     // Levels Data
     const levels = [
-      { question: "Level 1: What is 2 + 2?", answer: "4" },
-      { question: "Level 2: What color is the sky?", answer: "blue" },
-      { question: "Level 3: Solve: 3 x 3", answer: "9" },
-      { question: "Level 4: What is the opposite of 'up'?", answer: "down" },
-      // Add up to Level 10
-      { question: "Level 10: Subscribe to my channel!", answer: "subscribe", link: "https://www.youtube.com/@mixgaming444" },
+      { question: "Level 1: What is 2 + 2?", choices: ["3", "4", "5"], answer: "4", background: "#FFDDC1" },
+      { question: "Level 2: What color is the sky?", choices: ["Blue", "Green", "Red"], answer: "Blue", background: "#D4F1F4" },
+      { question: "Level 3: Solve: 3 x 3", choices: ["6", "9", "12"], answer: "9", background: "#E4C1F9" },
+      { question: "Level 4: What is the opposite of 'up'?", choices: ["Left", "Down", "Right"], answer: "Down", background: "#F9F871" },
+      { question: "Level 5: How many days are in a week?", choices: ["5", "6", "7"], answer: "7", background: "#C2F0C2" },
+      { 
+        question: "Level 10: Subscribe to my channel!", 
+        choices: ["Subscribe", "Ignore", "Later"], 
+        answer: "Subscribe", 
+        background: "#FFD5E5",
+        link: "https://www.youtube.com/@mixgaming444"
+      }
     ];
 
-    // Generate dummy levels up to 100
-    for (let i = 11; i <= 100; i++) {
+    // Generate more levels dynamically
+    for (let i = 6; i <= 100; i++) {
       levels.push({
-        question: `Level ${i}: This is a placeholder for level ${i}.`,
-        answer: `answer${i}`
+        question: `Level ${i}: What is ${i} + 1?`,
+        choices: [i - 1, i + 1, i + 2],
+        answer: (i + 1).toString(),
+        background: i % 2 === 0 ? "#FFDDC1" : "#C2F0C2"
       });
     }
 
@@ -141,37 +168,33 @@
 
     // Elements
     const questionEl = document.getElementById("question");
-    const optionsEl = document.getElementById("options");
+    const choicesEl = document.getElementById("choices");
     const nextButton = document.getElementById("next-button");
 
     // Load Level
     function loadLevel() {
       const level = levels[currentLevel];
+      document.body.style.background = level.background;
       questionEl.textContent = level.question;
 
-      // Special case for Level 10 with link
-      if (currentLevel === 9 && level.link) {
-        optionsEl.innerHTML = `<p>Click <a href="${level.link}" target="_blank">here</a> to subscribe!</p>`;
-        nextButton.style.display = "block";
-        nextButton.textContent = "Next";
-        return;
-      }
+      // Add choices as buttons
+      choicesEl.innerHTML = "";
+      level.choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.textContent = choice;
+        button.className = "choice-button";
+        button.onclick = () => checkAnswer(choice);
+        choicesEl.appendChild(button);
+      });
 
-      // Reset answer input for regular levels
-      optionsEl.innerHTML = `
-        <input type="text" id="answer" class="answer" placeholder="Enter your answer">
-        <button onclick="checkAnswer()">Submit</button>
-      `;
       nextButton.style.display = "none";
     }
 
     // Check Answer
-    function checkAnswer() {
-      const answerInput = document.getElementById("answer");
-      const userAnswer = answerInput.value.toLowerCase();
-      const correctAnswer = levels[currentLevel].answer.toLowerCase();
+    function checkAnswer(selectedChoice) {
+      const level = levels[currentLevel];
 
-      if (userAnswer === correctAnswer) {
+      if (selectedChoice.toLowerCase() === level.answer.toLowerCase()) {
         alert("Correct!");
         nextButton.style.display = "block";
       } else {
@@ -186,7 +209,7 @@
         loadLevel();
       } else {
         questionEl.textContent = "Congratulations! You've completed all levels!";
-        optionsEl.innerHTML = "";
+        choicesEl.innerHTML = "";
         nextButton.style.display = "none";
       }
     });
