@@ -8,9 +8,9 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      text-align: center;
       background: #f2f2f2;
       color: #333;
-      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -89,28 +89,38 @@
       background: #555;
     }
 
-    button {
-      margin-top: 20px;
+    .level-complete {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .level-complete h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .next-button {
       padding: 10px 20px;
-      font-size: 1rem;
-      background: #333;
-      color: #fff;
+      font-size: 1.2rem;
+      background: #28a745;
+      color: white;
       border: none;
       cursor: pointer;
       border-radius: 5px;
     }
 
-    button:hover {
-      background: #555;
-    }
-
-    a {
-      color: #007BFF;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
+    .next-button:hover {
+      background: #218838;
     }
   </style>
 </head>
@@ -126,96 +136,85 @@
   <div class="game-content">
     <div id="question" class="question"></div>
     <div id="choices" class="choices"></div>
-    <button id="next-button" style="display: none;">Next</button>
+  </div>
+
+  <div class="level-complete" id="level-complete">
+    <h1>Level Complete ✅</h1>
+    <button class="next-button" id="next-button">Next</button>
   </div>
 
   <script>
-    // Levels Data
+    // Levels data: Unique questions
     const levels = [
-      { question: "Level 1: What is the color of grass?", choices: ["Blue", "Green", "Yellow"], answer: "Green", background: "#D4F1F4" },
-      { question: "Level 2: What is heavier: a ton of feathers or a ton of bricks?", choices: ["Feathers", "Bricks", "Neither"], answer: "Neither", background: "#FFDDC1" },
-      { question: "Level 3: What animal says 'meow'?", choices: ["Dog", "Cat", "Cow"], answer: "Cat", background: "#F9F871" },
-      { question: "Level 4: Which one is a fruit?", choices: ["Apple", "Carrot", "Potato"], answer: "Apple", background: "#E4C1F9" },
+      { question: "What color is the sky?", choices: ["Blue", "Green", "Yellow"], answer: "Blue", background: "#ADD8E6" },
+      { question: "What do cats say?", choices: ["Woof", "Meow", "Moo"], answer: "Meow", background: "#FFDAB9" },
+      { question: "Which is a fruit?", choices: ["Apple", "Car", "Chair"], answer: "Apple", background: "#FFB6C1" },
+      { question: "What is the opposite of 'up'?", choices: ["Down", "Left", "Right"], answer: "Down", background: "#98FB98" },
+      { question: "What is 2+2?", choices: ["3", "4", "5"], answer: "4", background: "#FAFAD2" },
+      { question: "What is water made of?", choices: ["H2O", "Fire", "Air"], answer: "H2O", background: "#AFEEEE" },
+      { question: "What do birds use to fly?", choices: ["Wings", "Fins", "Feet"], answer: "Wings", background: "#FFE4E1" },
+      { question: "What do you wear on your feet?", choices: ["Shoes", "Hat", "Shirt"], answer: "Shoes", background: "#D8BFD8" },
+      { question: "What is the color of bananas?", choices: ["Yellow", "Red", "Purple"], answer: "Yellow", background: "#FFFACD" },
       { 
-        question: "Level 10: Subscribe to my channel!", 
-        choices: ["Subscribe", "Ignore", "Later"], 
-        answer: "Subscribe", 
-        background: "#FFD5E5",
-        link: "https://www.youtube.com/@mixgaming444"
+        question: "Subscribe to Mix Gaming 444!", 
+        choices: ["Subscribe!", "Later", "Ignore"], 
+        answer: "Subscribe!", 
+        background: "#FFD700",
+        link: "https://www.youtube.com/channel/mixgaming444" 
       }
+      // Add more levels up to 100
     ];
 
-    // Generate more levels dynamically
-    for (let i = 6; i <= 100; i++) {
-      levels.push({
-        question: `Level ${i}: Is water wet?`,
-        choices: ["Yes", "No", "Maybe"],
-        answer: "Yes",
-        background: i % 2 === 0 ? "#FFDDC1" : "#C2F0C2"
-      });
-    }
+    // Save progress in localStorage
+    let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
 
-    // Load last played level from localStorage
-    let currentLevel = localStorage.getItem("currentLevel") 
-      ? parseInt(localStorage.getItem("currentLevel")) 
-      : 0;
-
-    // Elements
     const questionEl = document.getElementById("question");
     const choicesEl = document.getElementById("choices");
-    const nextButton = document.getElementById("next-button");
+    const levelCompleteEl = document.getElementById("level-complete");
+    const nextButtonEl = document.getElementById("next-button");
 
-    // Load Level
     function loadLevel() {
       const level = levels[currentLevel];
       document.body.style.background = level.background;
       questionEl.textContent = level.question;
+      choicesEl.innerHTML = ""; // Clear previous choices
+      levelCompleteEl.style.display = "none"; // Hide level complete animation
 
-      // Add choices as buttons
-      choicesEl.innerHTML = "";
       level.choices.forEach(choice => {
         const button = document.createElement("button");
         button.textContent = choice;
-        button.className = "choice-button";
-        button.onclick = () => checkAnswer(choice);
+        button.classList.add("choice-button");
+        button.onclick = () => {
+          if (choice === level.answer) {
+            if (level.link) {
+              window.open(level.link, "_blank");
+            }
+            showLevelComplete();
+          } else {
+            alert("Try again!");
+          }
+        };
         choicesEl.appendChild(button);
       });
-
-      nextButton.style.display = "none";
     }
 
-    // Check Answer
-    function checkAnswer(selectedChoice) {
-      const level = levels[currentLevel];
-
-      if (selectedChoice.toLowerCase() === level.answer.toLowerCase()) {
-        alert("Correct!");
-        nextButton.style.display = "block";
-      } else {
-        alert("Try again!");
-      }
+    function showLevelComplete() {
+      levelCompleteEl.style.display = "flex";
     }
 
-    // Go to Next Level
-    nextButton.addEventListener("click", () => {
+    nextButtonEl.onclick = () => {
       currentLevel++;
-      localStorage.setItem("currentLevel", currentLevel); // Save progress
       if (currentLevel < levels.length) {
+        localStorage.setItem("currentLevel", currentLevel);
         loadLevel();
       } else {
-        questionEl.textContent = "Congratulations! You've completed all levels!";
-        choicesEl.innerHTML = "";
-        nextButton.style.display = "none";
+        alert("Congratulations! You completed all levels.");
+        localStorage.clear(); // Reset progress
       }
-    });
+    };
 
-    // Show Splash Screen
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        document.querySelector(".splash-screen").style.display = "none";
-        loadLevel();
-      }, 3000); // Splash screen duration
-    });
+    // Load the first level on start
+    window.onload = loadLevel;
   </script>
 </body>
 </html>
