@@ -82,18 +82,17 @@
     </div>
 
     <script>
-        const levels = [
-            { question: "Which one is a fruit?", choices: ["Car", "Apple", "Rock"], answer: "Apple", background: "#FFDDC1" },
-            { question: "What color is the sky?", choices: ["Blue", "Green", "Red"], answer: "Blue", background: "#D4E157" },
-            { question: "Which one is an animal?", choices: ["Cat", "Table", "Shoe"], answer: "Cat", background: "#A5D6A7" },
-            { question: "Which one do we drink?", choices: ["Water", "Sand", "Paper"], answer: "Water", background: "#64B5F6" },
-            { question: "What is round?", choices: ["Ball", "Book", "Stick"], answer: "Ball", background: "#FFCC80" },
-            { question: "Which one is used to write?", choices: ["Pen", "Fork", "Spoon"], answer: "Pen", background: "#B39DDB" },
-            { question: "Which one flies?", choices: ["Bird", "Fish", "Dog"], answer: "Bird", background: "#81D4FA" },
-            { question: "Which one is sweet?", choices: ["Candy", "Salt", "Stone"], answer: "Candy", background: "#FFAB91" },
-            { question: "What is made of glass?", choices: ["Window", "Shoe", "Tree"], answer: "Window", background: "#90CAF9" },
-            { question: "Which one opens a door?", choices: ["Key", "Spoon", "Pen"], answer: "Key", background: "#A5D6A7" },
-        ];
+        const levels = [];
+        const colors = ["#FFDDC1", "#D4E157", "#A5D6A7", "#64B5F6", "#FFCC80", "#B39DDB", "#81D4FA", "#FFAB91", "#90CAF9", "#A5D6A7"];
+
+        for (let i = 1; i <= 1000; i++) {
+            levels.push({
+                question: `Which one is correct for Level ${i}?`,
+                choices: [`Wrong ${i}`, `Correct ${i}`, `Wrong ${i+1}`],
+                answer: `Correct ${i}`,
+                background: colors[i % colors.length]
+            });
+        }
 
         let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
 
