@@ -1,219 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mix Gaming 444 - Puzzle Game</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f2f2f2;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      transition: background 0.5s ease;
-    }
-
-    .splash-screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #333;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      animation: fadeOut 3s forwards;
-    }
-
-    .splash-screen h1 {
-      font-size: 2.5rem;
-    }
-
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      100% { opacity: 0; visibility: hidden; }
-    }
-
-    .title-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #333;
-      color: #fff;
-      padding: 10px 0;
-      font-size: 1rem;
-      text-align: center;
-      z-index: 5;
-    }
-
-    .level-indicator {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    .game-content {
-      margin-top: 80px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .question {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .choice-button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      background: #333;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      width: 200px;
-    }
-
-    .choice-button:hover {
-      background: #555;
-    }
-
-    .level-complete {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
-    }
-
-    .level-complete h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-
-    .next-button {
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      background: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .next-button:hover {
-      background: #218838;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mix Puzzles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #FFDDC1;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background: black;
+            color: white;
+            padding: 10px;
+            font-size: 20px;
+        }
+        .title {
+            font-size: 18px;
+            margin: 10px;
+            background: gray;
+            color: white;
+            padding: 5px;
+        }
+        .game-container {
+            margin-top: 30px;
+        }
+        .choice-button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 18px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .choice-button:hover {
+            background: gray;
+        }
+        .level-complete {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: green;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            border-radius: 5px;
+        }
+        .next-button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 18px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div class="splash-screen">
-    <h1>Made by Mix Gaming 444</h1>
-  </div>
 
-  <div class="title-bar">
-    Mix Gaming 444
-  </div>
+    <div class="header">Mix Puzzles</div>
+    <div class="title">Mix Gaming 444</div>
+    
+    <div class="game-container">
+        <h2 id="level-indicator">Level: 1</h2>
+        <p id="question">Loading...</p>
+        <div id="choices"></div>
+    </div>
 
-  <div class="level-indicator" id="level-indicator">
-    Level: 1
-  </div>
+    <div id="level-complete" class="level-complete">
+        Level Complete ✅
+        <button id="next-button" class="next-button">Next</button>
+    </div>
 
-  <div class="game-content">
-    <div id="question" class="question"></div>
-    <div id="choices" class="choices"></div>
-  </div>
+    <script>
+        const levels = [
+            { question: "Which one is a fruit?", choices: ["Car", "Apple", "Rock"], answer: "Apple", background: "#FFDDC1" },
+            { question: "What color is the sky?", choices: ["Blue", "Green", "Red"], answer: "Blue", background: "#D4E157" },
+            { question: "Which one is an animal?", choices: ["Cat", "Table", "Shoe"], answer: "Cat", background: "#A5D6A7" },
+            { question: "Which one do we drink?", choices: ["Water", "Sand", "Paper"], answer: "Water", background: "#64B5F6" },
+            { question: "What is round?", choices: ["Ball", "Book", "Stick"], answer: "Ball", background: "#FFCC80" },
+            { question: "Which one is used to write?", choices: ["Pen", "Fork", "Spoon"], answer: "Pen", background: "#B39DDB" },
+            { question: "Which one flies?", choices: ["Bird", "Fish", "Dog"], answer: "Bird", background: "#81D4FA" },
+            { question: "Which one is sweet?", choices: ["Candy", "Salt", "Stone"], answer: "Candy", background: "#FFAB91" },
+            { question: "What is made of glass?", choices: ["Window", "Shoe", "Tree"], answer: "Window", background: "#90CAF9" },
+            { question: "Which one opens a door?", choices: ["Key", "Spoon", "Pen"], answer: "Key", background: "#A5D6A7" },
+        ];
 
-  <div class="level-complete" id="level-complete">
-    <h1>Level Complete ✅</h1>
-    <button class="next-button" id="next-button">Next</button>
-  </div>
+        let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
 
-  <script>
-    // Levels data: 100 unique questions
-    const levels = [];
-    for (let i = 1; i <= 100; i++) {
-      levels.push({
-        question: `This is level ${i}. Pick the correct choice!`,
-        choices: [`Correct for ${i}`, `Wrong ${i}`, `Wrong ${i * 2}`],
-        answer: `Correct for ${i}`,
-        background: `hsl(${i * 3}, 70%, 80%)`
-      });
-    }
+        const questionEl = document.getElementById("question");
+        const choicesEl = document.getElementById("choices");
+        const levelCompleteEl = document.getElementById("level-complete");
+        const nextButtonEl = document.getElementById("next-button");
+        const levelIndicatorEl = document.getElementById("level-indicator");
 
-    // Save progress in localStorage
-    let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
+        function loadLevel() {
+            if (currentLevel >= levels.length) {
+                alert("Congratulations! You completed all levels.");
+                localStorage.clear();
+                currentLevel = 0;
+            }
 
-    const questionEl = document.getElementById("question");
-    const choicesEl = document.getElementById("choices");
-    const levelCompleteEl = document.getElementById("level-complete");
-    const nextButtonEl = document.getElementById("next-button");
-    const levelIndicatorEl = document.getElementById("level-indicator");
+            const level = levels[currentLevel];
+            document.body.style.background = level.background;
+            questionEl.textContent = level.question;
+            levelIndicatorEl.textContent = `Level: ${currentLevel + 1}`;
+            choicesEl.innerHTML = "";
+            levelCompleteEl.style.display = "none";
 
-    function loadLevel() {
-      const level = levels[currentLevel];
-      document.body.style.background = level.background;
-      questionEl.textContent = level.question;
-      levelIndicatorEl.textContent = `Level: ${currentLevel + 1}`;
-      choicesEl.innerHTML = ""; // Clear previous choices
-      levelCompleteEl.style.display = "none"; // Hide level complete animation
+            level.choices.forEach(choice => {
+                const button = document.createElement("button");
+                button.textContent = choice;
+                button.classList.add("choice-button");
+                button.onclick = () => {
+                    if (choice === level.answer) {
+                        showLevelComplete();
+                    } else {
+                        alert("Wrong! Try again.");
+                    }
+                };
+                choicesEl.appendChild(button);
+            });
+        }
 
-      level.choices.forEach(choice => {
-        const button = document.createElement("button");
-        button.textContent = choice;
-        button.classList.add("choice-button");
-        button.onclick = () => {
-          if (choice === level.answer) {
-            showLevelComplete();
-          } else {
-            alert("Try again!");
-          }
+        function showLevelComplete() {
+            levelCompleteEl.style.display = "block";
+        }
+
+        nextButtonEl.onclick = () => {
+            currentLevel++;
+            localStorage.setItem("currentLevel", currentLevel);
+            loadLevel();
         };
-        choicesEl.appendChild(button);
-      });
-    }
 
-    function showLevelComplete() {
-      levelCompleteEl.style.display = "flex";
-    }
+        window.onload = loadLevel;
+    </script>
 
-    nextButtonEl.onclick = () => {
-      currentLevel++;
-      if (currentLevel < levels.length) {
-        localStorage.setItem("currentLevel", currentLevel);
-        loadLevel();
-      } else {
-        alert("Congratulations! You completed all levels.");
-        localStorage.clear(); // Reset progress
-      }
-    };
-
-    // Load the first level on start
-    window.onload = loadLevel;
-  </script>
 </body>
 </html>
