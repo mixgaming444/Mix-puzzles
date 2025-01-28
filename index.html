@@ -8,141 +8,103 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background: #FFDDC1;
-            margin: 0;
-            padding: 20px;
+            transition: background-color 0.5s;
         }
-        .header {
-            background: black;
-            color: white;
-            padding: 10px;
-            font-size: 20px;
+        #game-container {
+            margin-top: 50px;
         }
-        .title {
-            font-size: 18px;
-            margin: 10px;
-            background: gray;
-            color: white;
-            padding: 5px;
-        }
-        .game-container {
-            margin-top: 30px;
-        }
-        .choice-button {
+        button {
             display: block;
-            width: 80%;
+            width: 200px;
             margin: 10px auto;
             padding: 10px;
             font-size: 18px;
-            background: black;
-            color: white;
-            border: none;
             cursor: pointer;
         }
-        .choice-button:hover {
-            background: gray;
-        }
-        .level-complete {
-            display: none;
+        #start-animation {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: green;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-            border-radius: 5px;
-        }
-        .next-button {
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 18px;
+            width: 100%;
+            height: 100%;
             background: black;
             color: white;
-            border: none;
-            cursor: pointer;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 <body>
+    <div id="start-animation">Made by Mix Gaming 444</div>
 
-    <div class="header">Mix Puzzles</div>
-    <div class="title">Mix Gaming 444</div>
-    
-    <div class="game-container">
-        <h2 id="level-indicator">Level: 1</h2>
-        <p id="question">Loading...</p>
+    <div id="game-container">
+        <h1>Mix Puzzles</h1>
+        <h2 id="level-title">Level 1</h2>
+        <p id="question">Which one is correct for Level 1?</p>
         <div id="choices"></div>
-    </div>
-
-    <div id="level-complete" class="level-complete">
-        Level Complete ✅
-        <button id="next-button" class="next-button">Next</button>
+        <button id="next-button" style="display: none;">Next Level</button>
     </div>
 
     <script>
-        const levels = [];
-        const colors = ["#FFDDC1", "#D4E157", "#A5D6A7", "#64B5F6", "#FFCC80", "#B39DDB", "#81D4FA", "#FFAB91", "#90CAF9", "#A5D6A7"];
+        let currentLevel = localStorage.getItem("level") ? parseInt(localStorage.getItem("level")) : 1;
 
+        let levels = [];
         for (let i = 1; i <= 1000; i++) {
             levels.push({
                 question: `Which one is correct for Level ${i}?`,
-                choices: [`Wrong ${i}`, `Correct ${i}`, `Wrong ${i+1}`],
-                answer: `Correct ${i}`,
-                background: colors[i % colors.length]
+                choices: [`Wrong ${i}`, `Correct ${i}`, `Wrong ${i + 1}`],
+                correctIndex: 1
             });
         }
 
-        let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
-
-        const questionEl = document.getElementById("question");
-        const choicesEl = document.getElementById("choices");
-        const levelCompleteEl = document.getElementById("level-complete");
-        const nextButtonEl = document.getElementById("next-button");
-        const levelIndicatorEl = document.getElementById("level-indicator");
+        levels[9].question = "Subscribe to Mix Gaming 444!";
+        levels[9].choices[1] = `<a href="https://www.youtube.com/@MixGaming444" target="_blank">Subscribe</a>`;
 
         function loadLevel() {
-            if (currentLevel >= levels.length) {
-                alert("Congratulations! You completed all levels.");
-                localStorage.clear();
-                currentLevel = 0;
+            if (currentLevel > 1000) {
+                alert("Congratulations! You finished all levels.");
+                return;
             }
 
-            const level = levels[currentLevel];
-            document.body.style.background = level.background;
-            questionEl.textContent = level.question;
-            levelIndicatorEl.textContent = `Level: ${currentLevel + 1}`;
-            choicesEl.innerHTML = "";
-            levelCompleteEl.style.display = "none";
+            document.getElementById("level-title").innerText = `Level ${currentLevel}`;
+            document.getElementById("question").innerHTML = levels[currentLevel - 1].question;
 
-            level.choices.forEach(choice => {
-                const button = document.createElement("button");
-                button.textContent = choice;
-                button.classList.add("choice-button");
-                button.onclick = () => {
-                    if (choice === level.answer) {
-                        showLevelComplete();
-                    } else {
-                        alert("Wrong! Try again.");
-                    }
-                };
-                choicesEl.appendChild(button);
+            let choicesDiv = document.getElementById("choices");
+            choicesDiv.innerHTML = "";
+            levels[currentLevel - 1].choices.forEach((choice, index) => {
+                let btn = document.createElement("button");
+                btn.innerHTML = choice;
+                btn.onclick = () => checkAnswer(index);
+                choicesDiv.appendChild(btn);
             });
+
+            document.body.style.backgroundColor = getRandomColor();
         }
 
-        function showLevelComplete() {
-            levelCompleteEl.style.display = "block";
+        function checkAnswer(index) {
+            if (index === levels[currentLevel - 1].correctIndex) {
+                document.getElementById("question").innerHTML = "✅ Level Complete!";
+                document.getElementById("next-button").style.display = "block";
+                currentLevel++;
+                localStorage.setItem("level", currentLevel);
+            } else {
+                alert("Wrong choice! Try again.");
+            }
         }
 
-        nextButtonEl.onclick = () => {
-            currentLevel++;
-            localStorage.setItem("currentLevel", currentLevel);
+        document.getElementById("next-button").onclick = () => {
+            document.getElementById("next-button").style.display = "none";
             loadLevel();
         };
 
-        window.onload = loadLevel;
-    </script>
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 100%, 80%)`;
+        }
 
+        setTimeout(() => {
+            document.getElementById("start-animation").style.display = "none";
+            loadLevel();
+        }, 3000);
+    </script>
 </body>
 </html>
