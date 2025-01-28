@@ -1,110 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mix Puzzles</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            transition: background-color 0.5s;
-        }
-        #game-container {
-            margin-top: 50px;
-        }
-        button {
-            display: block;
-            width: 200px;
-            margin: 10px auto;
-            padding: 10px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #start-animation {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: black;
-            color: white;
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Hosting Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 20px 0;
+    }
+    header h1 {
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .upload-area {
+      border: 2px dashed #666;
+      padding: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px 0;
+    }
+    .upload-area p {
+      margin: 0;
+      color: #333;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      color: white;
+      background-color: #333;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .btn:hover {
+      background-color: #555;
+    }
+    .file-list {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .file-list ul {
+      list-style: none;
+      padding: 0;
+    }
+    .file-list li {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-bottom: 5px;
+    }
+    footer {
+      margin-top: 20px;
+      color: #666;
+    }
+  </style>
 </head>
 <body>
-    <div id="start-animation">Made by Mix Gaming 444</div>
 
-    <div id="game-container">
-        <h1>Mix Puzzles</h1>
-        <h2 id="level-title">Level 1</h2>
-        <p id="question">Which one is correct for Level 1?</p>
-        <div id="choices"></div>
-        <button id="next-button" style="display: none;">Next Level</button>
-    </div>
+<header>
+  <h1>Website Hosting Platform</h1>
+</header>
 
-    <script>
-        let currentLevel = localStorage.getItem("level") ? parseInt(localStorage.getItem("level")) : 1;
+<div class="container">
+  <h2>Upload Your Files</h2>
+  <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+    <p>Click here or drag files to upload</p>
+  </div>
+  <input type="file" id="fileInput" multiple style="display: none;">
+  <div class="file-list">
+    <h3>Uploaded Files:</h3>
+    <ul id="fileList"></ul>
+  </div>
+  <a href="#" class="btn" onclick="simulateHosting()">Simulate Hosting</a>
+</div>
 
-        let levels = [];
-        for (let i = 1; i <= 1000; i++) {
-            levels.push({
-                question: `Which one is correct for Level ${i}?`,
-                choices: [`Wrong ${i}`, `Correct ${i}`, `Wrong ${i + 1}`],
-                correctIndex: 1
-            });
-        }
+<footer>
+  <p>Powered by Mix Gaming 444</p>
+</footer>
 
-        levels[9].question = "Subscribe to Mix Gaming 444!";
-        levels[9].choices[1] = `<a href="https://www.youtube.com/@MixGaming444" target="_blank">Subscribe</a>`;
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const fileList = document.getElementById('fileList');
+  const uploadedFiles = [];
 
-        function loadLevel() {
-            if (currentLevel > 1000) {
-                alert("Congratulations! You finished all levels.");
-                return;
-            }
+  // Simulate file upload
+  fileInput.addEventListener('change', (event) => {
+    const files = event.target.files;
+    for (const file of files) {
+      uploadedFiles.push(file);
+      const li = document.createElement('li');
+      li.textContent = file.name;
+      fileList.appendChild(li);
+    }
+  });
 
-            document.getElementById("level-title").innerText = `Level ${currentLevel}`;
-            document.getElementById("question").innerHTML = levels[currentLevel - 1].question;
+  // Simulate hosting
+  function simulateHosting() {
+    if (uploadedFiles.length === 0) {
+      alert('Please upload at least one file to simulate hosting.');
+      return;
+    }
+    const htmlFile = uploadedFiles.find(file => file.name.endsWith('.html'));
+    if (!htmlFile) {
+      alert('Please upload an HTML file to simulate hosting.');
+      return;
+    }
+    const url = URL.createObjectURL(htmlFile);
+    window.open(url, '_blank');
+  }
+</script>
 
-            let choicesDiv = document.getElementById("choices");
-            choicesDiv.innerHTML = "";
-            levels[currentLevel - 1].choices.forEach((choice, index) => {
-                let btn = document.createElement("button");
-                btn.innerHTML = choice;
-                btn.onclick = () => checkAnswer(index);
-                choicesDiv.appendChild(btn);
-            });
-
-            document.body.style.backgroundColor = getRandomColor();
-        }
-
-        function checkAnswer(index) {
-            if (index === levels[currentLevel - 1].correctIndex) {
-                document.getElementById("question").innerHTML = "✅ Level Complete!";
-                document.getElementById("next-button").style.display = "block";
-                currentLevel++;
-                localStorage.setItem("level", currentLevel);
-            } else {
-                alert("Wrong choice! Try again.");
-            }
-        }
-
-        document.getElementById("next-button").onclick = () => {
-            document.getElementById("next-button").style.display = "none";
-            loadLevel();
-        };
-
-        function getRandomColor() {
-            return `hsl(${Math.random() * 360}, 100%, 80%)`;
-        }
-
-        setTimeout(() => {
-            document.getElementById("start-animation").style.display = "none";
-            loadLevel();
-        }, 3000);
-    </script>
 </body>
 </html>
