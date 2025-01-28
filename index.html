@@ -56,8 +56,14 @@
       z-index: 5;
     }
 
+    .level-indicator {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
     .game-content {
-      margin-top: 50px;
+      margin-top: 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -133,6 +139,10 @@
     Mix Gaming 444
   </div>
 
+  <div class="level-indicator" id="level-indicator">
+    Level: 1
+  </div>
+
   <div class="game-content">
     <div id="question" class="question"></div>
     <div id="choices" class="choices"></div>
@@ -144,26 +154,16 @@
   </div>
 
   <script>
-    // Levels data: Unique questions
-    const levels = [
-      { question: "What color is the sky?", choices: ["Blue", "Green", "Yellow"], answer: "Blue", background: "#ADD8E6" },
-      { question: "What do cats say?", choices: ["Woof", "Meow", "Moo"], answer: "Meow", background: "#FFDAB9" },
-      { question: "Which is a fruit?", choices: ["Apple", "Car", "Chair"], answer: "Apple", background: "#FFB6C1" },
-      { question: "What is the opposite of 'up'?", choices: ["Down", "Left", "Right"], answer: "Down", background: "#98FB98" },
-      { question: "What is 2+2?", choices: ["3", "4", "5"], answer: "4", background: "#FAFAD2" },
-      { question: "What is water made of?", choices: ["H2O", "Fire", "Air"], answer: "H2O", background: "#AFEEEE" },
-      { question: "What do birds use to fly?", choices: ["Wings", "Fins", "Feet"], answer: "Wings", background: "#FFE4E1" },
-      { question: "What do you wear on your feet?", choices: ["Shoes", "Hat", "Shirt"], answer: "Shoes", background: "#D8BFD8" },
-      { question: "What is the color of bananas?", choices: ["Yellow", "Red", "Purple"], answer: "Yellow", background: "#FFFACD" },
-      { 
-        question: "Subscribe to Mix Gaming 444!", 
-        choices: ["Subscribe!", "Later", "Ignore"], 
-        answer: "Subscribe!", 
-        background: "#FFD700",
-        link: "https://www.youtube.com/channel/mixgaming444" 
-      }
-      // Add more levels up to 100
-    ];
+    // Levels data: 100 unique questions
+    const levels = [];
+    for (let i = 1; i <= 100; i++) {
+      levels.push({
+        question: `This is level ${i}. Pick the correct choice!`,
+        choices: [`Correct for ${i}`, `Wrong ${i}`, `Wrong ${i * 2}`],
+        answer: `Correct for ${i}`,
+        background: `hsl(${i * 3}, 70%, 80%)`
+      });
+    }
 
     // Save progress in localStorage
     let currentLevel = parseInt(localStorage.getItem("currentLevel")) || 0;
@@ -172,11 +172,13 @@
     const choicesEl = document.getElementById("choices");
     const levelCompleteEl = document.getElementById("level-complete");
     const nextButtonEl = document.getElementById("next-button");
+    const levelIndicatorEl = document.getElementById("level-indicator");
 
     function loadLevel() {
       const level = levels[currentLevel];
       document.body.style.background = level.background;
       questionEl.textContent = level.question;
+      levelIndicatorEl.textContent = `Level: ${currentLevel + 1}`;
       choicesEl.innerHTML = ""; // Clear previous choices
       levelCompleteEl.style.display = "none"; // Hide level complete animation
 
@@ -186,9 +188,6 @@
         button.classList.add("choice-button");
         button.onclick = () => {
           if (choice === level.answer) {
-            if (level.link) {
-              window.open(level.link, "_blank");
-            }
             showLevelComplete();
           } else {
             alert("Try again!");
