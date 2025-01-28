@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mix Gaming 444 - Puzzle Game</title>
+  <style>
+    /* General Styles */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      color: #333;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    /* Splash Screen */
+    .splash-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      animation: fadeOut 3s forwards;
+    }
+
+    .splash-screen h1 {
+      font-size: 2.5rem;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* Title Bar */
+    .title-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #333;
+      color: #fff;
+      padding: 10px 0;
+      font-size: 1rem;
+      text-align: center;
+      z-index: 5;
+    }
+
+    /* Game Content */
+    .game-content {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .question {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .answer {
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background: #555;
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div class="splash-screen">
+    <h1>Made by Mix Gaming 444</h1>
+  </div>
+
+  <!-- Title Bar -->
+  <div class="title-bar">
+    Mix Gaming 444
+  </div>
+
+  <!-- Game Content -->
+  <div class="game-content">
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <button id="next-button" style="display: none;">Next</button>
+  </div>
+
+  <script>
+    // Levels Data
+    const levels = [
+      { question: "Level 1: What is 2 + 2?", answer: "4" },
+      { question: "Level 2: What color is the sky?", answer: "blue" },
+      { question: "Level 3: Solve: 3 x 3", answer: "9" },
+      { question: "Level 4: What is the opposite of 'up'?", answer: "down" },
+      // Add up to Level 10
+      { question: "Level 10: Subscribe to my channel!", answer: "subscribe", link: "https://www.youtube.com/@mixgaming444" },
+    ];
+
+    // Generate dummy levels up to 100
+    for (let i = 11; i <= 100; i++) {
+      levels.push({
+        question: `Level ${i}: This is a placeholder for level ${i}.`,
+        answer: `answer${i}`
+      });
+    }
+
+    // Game Variables
+    let currentLevel = 0;
+
+    // Elements
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextButton = document.getElementById("next-button");
+
+    // Load Level
+    function loadLevel() {
+      const level = levels[currentLevel];
+      questionEl.textContent = level.question;
+
+      // Special case for Level 10 with link
+      if (currentLevel === 9 && level.link) {
+        optionsEl.innerHTML = `<p>Click <a href="${level.link}" target="_blank">here</a> to subscribe!</p>`;
+        nextButton.style.display = "block";
+        nextButton.textContent = "Next";
+        return;
+      }
+
+      // Reset answer input for regular levels
+      optionsEl.innerHTML = `
+        <input type="text" id="answer" class="answer" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Submit</button>
+      `;
+      nextButton.style.display = "none";
+    }
+
+    // Check Answer
+    function checkAnswer() {
+      const answerInput = document.getElementById("answer");
+      const userAnswer = answerInput.value.toLowerCase();
+      const correctAnswer = levels[currentLevel].answer.toLowerCase();
+
+      if (userAnswer === correctAnswer) {
+        alert("Correct!");
+        nextButton.style.display = "block";
+      } else {
+        alert("Try again!");
+      }
+    }
+
+    // Go to Next Level
+    nextButton.addEventListener("click", () => {
+      currentLevel++;
+      if (currentLevel < levels.length) {
+        loadLevel();
+      } else {
+        questionEl.textContent = "Congratulations! You've completed all levels!";
+        optionsEl.innerHTML = "";
+        nextButton.style.display = "none";
+      }
+    });
+
+    // Show Splash Screen
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        document.querySelector(".splash-screen").style.display = "none";
+        loadLevel();
+      }, 3000); // Splash screen duration
+    });
+  </script>
+</body>
+</html>
