@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mix Gaming 444 - Puzzle Game</title>
   <style>
-    /* General Styles */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -20,7 +19,6 @@
       transition: background 0.5s ease;
     }
 
-    /* Splash Screen */
     .splash-screen {
       position: absolute;
       top: 0;
@@ -45,7 +43,6 @@
       100% { opacity: 0; visibility: hidden; }
     }
 
-    /* Title Bar */
     .title-bar {
       position: fixed;
       top: 0;
@@ -59,7 +56,6 @@
       z-index: 5;
     }
 
-    /* Game Content */
     .game-content {
       margin-top: 50px;
       display: flex;
@@ -119,17 +115,14 @@
   </style>
 </head>
 <body>
-  <!-- Splash Screen -->
   <div class="splash-screen">
     <h1>Made by Mix Gaming 444</h1>
   </div>
 
-  <!-- Title Bar -->
   <div class="title-bar">
     Mix Gaming 444
   </div>
 
-  <!-- Game Content -->
   <div class="game-content">
     <div id="question" class="question"></div>
     <div id="choices" class="choices"></div>
@@ -139,11 +132,10 @@
   <script>
     // Levels Data
     const levels = [
-      { question: "Level 1: What is 2 + 2?", choices: ["3", "4", "5"], answer: "4", background: "#FFDDC1" },
-      { question: "Level 2: What color is the sky?", choices: ["Blue", "Green", "Red"], answer: "Blue", background: "#D4F1F4" },
-      { question: "Level 3: Solve: 3 x 3", choices: ["6", "9", "12"], answer: "9", background: "#E4C1F9" },
-      { question: "Level 4: What is the opposite of 'up'?", choices: ["Left", "Down", "Right"], answer: "Down", background: "#F9F871" },
-      { question: "Level 5: How many days are in a week?", choices: ["5", "6", "7"], answer: "7", background: "#C2F0C2" },
+      { question: "Level 1: What is the color of grass?", choices: ["Blue", "Green", "Yellow"], answer: "Green", background: "#D4F1F4" },
+      { question: "Level 2: What is heavier: a ton of feathers or a ton of bricks?", choices: ["Feathers", "Bricks", "Neither"], answer: "Neither", background: "#FFDDC1" },
+      { question: "Level 3: What animal says 'meow'?", choices: ["Dog", "Cat", "Cow"], answer: "Cat", background: "#F9F871" },
+      { question: "Level 4: Which one is a fruit?", choices: ["Apple", "Carrot", "Potato"], answer: "Apple", background: "#E4C1F9" },
       { 
         question: "Level 10: Subscribe to my channel!", 
         choices: ["Subscribe", "Ignore", "Later"], 
@@ -156,15 +148,17 @@
     // Generate more levels dynamically
     for (let i = 6; i <= 100; i++) {
       levels.push({
-        question: `Level ${i}: What is ${i} + 1?`,
-        choices: [i - 1, i + 1, i + 2],
-        answer: (i + 1).toString(),
+        question: `Level ${i}: Is water wet?`,
+        choices: ["Yes", "No", "Maybe"],
+        answer: "Yes",
         background: i % 2 === 0 ? "#FFDDC1" : "#C2F0C2"
       });
     }
 
-    // Game Variables
-    let currentLevel = 0;
+    // Load last played level from localStorage
+    let currentLevel = localStorage.getItem("currentLevel") 
+      ? parseInt(localStorage.getItem("currentLevel")) 
+      : 0;
 
     // Elements
     const questionEl = document.getElementById("question");
@@ -205,6 +199,7 @@
     // Go to Next Level
     nextButton.addEventListener("click", () => {
       currentLevel++;
+      localStorage.setItem("currentLevel", currentLevel); // Save progress
       if (currentLevel < levels.length) {
         loadLevel();
       } else {
